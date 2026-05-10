@@ -39,7 +39,7 @@ async function request(method: string, path: string, body?: any) {
     return data;
   } catch (err: any) {
     if (err.message === 'Failed to fetch' || err.name === 'TypeError') {
-      throw new Error('Backend server is not reachable. Please ensure the backend is running on http://localhost:3001');
+      throw new Error(`Backend server is not reachable at ${BASE_URL}. Please ensure the backend is running.`);
     }
     throw err;
   }
