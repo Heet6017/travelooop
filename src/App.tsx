@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
@@ -15,6 +16,23 @@ import Comparison from './pages/Comparison';
 function App() {
   return (
     <BrowserRouter>
+      <Toaster
+        position="top-center"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: 'rgba(10,10,10,0.95)',
+            color: '#fff',
+            border: '1px solid rgba(255,255,255,0.1)',
+            borderRadius: '14px',
+            backdropFilter: 'blur(20px)',
+            fontWeight: '600',
+            fontSize: '14px',
+          },
+          success: { iconTheme: { primary: '#4ade80', secondary: '#000' } },
+          error: { iconTheme: { primary: '#f87171', secondary: '#000' } },
+        }}
+      />
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<Login />} />
