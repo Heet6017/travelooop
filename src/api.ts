@@ -1,4 +1,4 @@
-const BASE_URL = 'http://localhost:3001/api';
+const BASE_URL = `http://${window.location.hostname}:3001/api`;
 
 function getToken(): string | null {
   return localStorage.getItem('traveloop_token');
