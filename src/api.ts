@@ -1,4 +1,11 @@
-const BASE_URL = `http://${window.location.hostname}:3001/api`;
+const getBaseUrl = () => {
+  // Use the current hostname, but default to localhost if something is wrong
+  const host = window.location.hostname || 'localhost';
+  return `http://${host}:3001/api`;
+};
+
+const BASE_URL = getBaseUrl();
+
 
 function getToken(): string | null {
   return localStorage.getItem('traveloop_token');
@@ -38,12 +45,14 @@ async function request(method: string, path: string, body?: any) {
     if (!res.ok) throw new Error(data.error || 'Request failed');
     return data;
   } catch (err: any) {
+    console.error('API Request Error:', { method, path, url: `${BASE_URL}${path}`, error: err });
     if (err.message === 'Failed to fetch' || err.name === 'TypeError') {
       throw new Error(`Backend server is not reachable at ${BASE_URL}. Please ensure the backend is running.`);
     }
     throw err;
   }
 }
+
 
 export const api = {
   get: (path: string) => request('GET', path),
