@@ -27,15 +27,22 @@ async function request(method: string, path: string, body?: any) {
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (token) headers['Authorization'] = `Bearer ${token}`;
 
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : undefined,
-  });
+  try {
+    const res = await fetch(`${BASE_URL}${path}`, {
+      method,
+      headers,
+      body: body ? JSON.stringify(body) : undefined,
+    });
 
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error || 'Request failed');
-  return data;
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  } catch (err: any) {
+    if (err.message === 'Failed to fetch' || err.name === 'TypeError') {
+      throw new Error('Backend server is not reachable. Please ensure the backend is running on http://localhost:3001');
+    }
+    throw err;
+  }
 }
 
 export const api = {
