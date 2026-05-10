@@ -1,92 +1,99 @@
-import { useForm } from 'react-hook-form';
-import { Mail, Lock } from 'lucide-react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
+import { Mail, Lock, ArrowRight } from 'lucide-react';
 import { api, setAuthToken, setUser } from '../api';
+import toast from 'react-hot-toast';
 
 export default function Login() {
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const onSubmit = async (data: any) => {
+  // Background Health Check (Silent)
+  useEffect(() => {
+    api.get('/health').catch(() => {
+      // Don't show toast on every load, just log it
+      console.warn('Backend currently unreachable');
+    });
+  }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
     try {
-      const res = await api.post('/auth/login', { email: data.email, password: data.password });
-      setAuthToken(res.token);
-      setUser(res.user);
-      toast.success(`Welcome back, ${res.user.name}!`);
+      const data = await api.post('/auth/login', { email, password });
+      setAuthToken(data.token);
+      setUser(data.user);
+      toast.success('Welcome back! ✈️');
       navigate('/dashboard');
     } catch (err: any) {
       toast.error(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="cinematic-bg min-h-screen flex items-center justify-center p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 30, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-        className="w-full max-w-[960px] flex rounded-[32px] overflow-hidden border border-white/10 shadow-2xl backdrop-blur-sm"
-        style={{ minHeight: '600px' }}
+    <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 relative overflow-hidden">
+      {/* Premium Cinematic Background */}
+      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1548013146-72479768bada?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-30 grayscale" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-[#050505]" />
+      
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.8, ease: "circOut" }}
+        className="w-full max-w-md relative z-10"
       >
-        {/* Left: Indian image panel */}
-        <div className="hidden md:flex w-5/12 relative overflow-hidden flex-col justify-end p-10">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center transition-transform duration-[20s] hover:scale-110" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-          <div className="relative z-10">
-            <p className="text-white/40 uppercase tracking-[0.3em] text-[10px] font-bold mb-2">Incredible India</p>
-            <h3 className="font-bold text-3xl text-white tracking-tight leading-tight mb-3">
-              Discover the Soul<br />of Bharath
-            </h3>
-            <p className="text-white/60 text-sm">Plan cinematic journeys across India's most extraordinary destinations.</p>
-          </div>
+        <div className="text-center mb-12">
+          <h1 className="font-voyage text-8xl text-white uppercase tracking-wider mb-2 drop-shadow-2xl">Traveloop</h1>
+          <p className="text-white/30 font-bold uppercase tracking-[0.4em] text-[10px]">Incredible India Journeys</p>
         </div>
 
-        {/* Right: Form panel */}
-        <div className="flex-1 bg-black/60 backdrop-blur-xl p-10 md:p-14 flex flex-col justify-center">
-          <div className="mb-10">
-            <h1 className="text-white font-bold text-3xl tracking-tight mb-1">Sign in</h1>
-            <p className="text-white/40 text-sm">Welcome back, explorer</p>
-          </div>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={18} />
-              <input
-                {...register('email', { required: 'Email is required' })}
-                type="email"
-                placeholder="Email address"
-                className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder-white/30 font-medium focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
-              />
-              {errors.email && <p className="text-red-400 text-xs mt-1 ml-1">{errors.email.message as string}</p>}
+        <div className="bg-white/5 backdrop-blur-3xl p-12 rounded-[48px] border border-white/10 shadow-premium">
+          <form onSubmit={handleLogin} className="space-y-8">
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase text-white/20 tracking-widest ml-1">Identity</label>
+              <div className="relative group">
+                <Mail className="absolute left-6 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-white/50 transition-colors" size={18} />
+                <input 
+                  type="email" required value={email} onChange={e => setEmail(e.target.value)}
+                  placeholder="Email Address"
+                  className="w-full h-16 bg-white/5 border border-white/5 rounded-3xl pl-16 pr-6 text-white placeholder-white/10 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all"
+                />
+              </div>
             </div>
 
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30" size={18} />
-              <input
-                {...register('password', { required: 'Password is required', minLength: { value: 6, message: 'Min 6 chars' } })}
-                type="password"
-                placeholder="Password"
-                className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder-white/30 font-medium focus:outline-none focus:border-white/30 focus:bg-white/10 transition-all"
-              />
-              {errors.password && <p className="text-red-400 text-xs mt-1 ml-1">{errors.password.message as string}</p>}
+            <div className="space-y-3">
+              <label className="text-[10px] font-black uppercase text-white/20 tracking-widest ml-1">Access Key</label>
+              <div className="relative group">
+                <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-white/10 group-focus-within:text-white/50 transition-colors" size={18} />
+                <input 
+                  type="password" required value={password} onChange={e => setPassword(e.target.value)}
+                  placeholder="Password"
+                  className="w-full h-16 bg-white/5 border border-white/5 rounded-3xl pl-16 pr-6 text-white placeholder-white/10 focus:outline-none focus:border-white/20 focus:bg-white/10 transition-all"
+                />
+              </div>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full h-14 bg-white text-black font-bold rounded-2xl uppercase tracking-widest text-sm hover:bg-white/90 transition-all disabled:opacity-60"
+            <button 
+              disabled={loading}
+              className="w-full h-18 bg-white text-black rounded-3xl font-black uppercase tracking-[0.2em] text-[11px] flex items-center justify-center gap-4 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl hover:bg-white/90 disabled:opacity-50"
             >
-              {isSubmitting ? 'Signing in...' : 'Sign In'}
-            </motion.button>
+              {loading ? 'Authenticating...' : <>Enter Dashboard <ArrowRight size={20} /></>}
+            </button>
           </form>
 
-          <p className="text-white/40 text-sm text-center mt-8">
-            Don't have an account?{' '}
-            <Link to="/register" className="text-white font-bold hover:underline">Register here</Link>
-          </p>
+          <div className="mt-12 text-center">
+            <button 
+              onClick={() => navigate('/register')}
+              className="text-white/30 hover:text-white text-[10px] font-black uppercase tracking-widest transition-colors"
+            >
+              First Journey? Create Account
+            </button>
+          </div>
         </div>
       </motion.div>
     </div>

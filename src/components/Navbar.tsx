@@ -1,4 +1,4 @@
-import { User, Map, PlusCircle, LayoutGrid, Calendar, Search, DollarSign, BarChart3, Settings, Columns } from 'lucide-react';
+import { User, Map, PlusCircle, LayoutGrid, Calendar, Search, DollarSign, BarChart3, Settings, Columns, LogOut } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 
 export default function Navbar() {
@@ -57,6 +57,13 @@ export default function Navbar() {
               />
             </div>
           </Link>
+          <button 
+            onClick={() => { localStorage.clear(); window.location.href='/login'; }}
+            className="text-white/20 hover:text-red-400 transition-colors ml-2"
+            title="Reset Session"
+          >
+            <LogOut size={16} />
+          </button>
         </div>
       </div>
     </nav>

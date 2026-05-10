@@ -14,7 +14,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
-        className="relative z-10 w-full h-screen flex flex-col text-[#050505] overflow-hidden"
+        className="relative z-10 w-full h-screen flex flex-col text-white overflow-hidden"
       >
         <Navbar />
         <div className="flex-1 overflow-y-auto custom-scrollbar p-10 relative">
